@@ -1,9 +1,11 @@
 import { TerrainRenderer } from './TerrainRenderer.js';
 import { PathRenderer } from './PathRenderer.js';
+import { RideRenderer } from './RideRenderer.js';
 
 export class Renderer {
   #terrain = new TerrainRenderer();
   #path    = new PathRenderer();
+  #ride    = new RideRenderer();
 
   render(worldCtx, uiCtx, world, cam, cssW, cssH) {
     worldCtx.clearRect(0, 0, cssW, cssH);
@@ -11,7 +13,8 @@ export class Renderer {
 
     this.#terrain.render(worldCtx, world, cam, cssW, cssH);
     this.#path.render(worldCtx, world, cam, cssW, cssH);
+    this.#ride.render(worldCtx, world, cam);
 
-    // Phase 3+: ride, peep, train, UI renderers added here
+    // Phase 4+: track, peep, train renderers added here
   }
 }
