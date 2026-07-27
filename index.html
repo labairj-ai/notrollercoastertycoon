@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Mobile-first: prevent native pinch-zoom, fill viewport including notch -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <title>Not Roller Coaster Tycoon</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      /* Prevent rubber-band scroll on iOS */
+      overscroll-behavior: none;
+      /* Block all native touch gestures — JS handles everything */
+      touch-action: none;
+      background: #1a1a2e;
+    }
+
+    #app {
+      position: fixed;
+      /* Respect notch / home-indicator safe areas */
+      top: env(safe-area-inset-top, 0px);
+      right: env(safe-area-inset-right, 0px);
+      bottom: env(safe-area-inset-bottom, 0px);
+      left: env(safe-area-inset-left, 0px);
+      overflow: hidden;
+    }
+
+    #world {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    /* UI canvas floats on top; pointer-events:none so clicks fall through to world canvas */
+    #ui {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="world"></canvas>
+    <canvas id="ui"></canvas>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
