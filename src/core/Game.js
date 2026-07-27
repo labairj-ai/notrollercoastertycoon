@@ -8,6 +8,7 @@ import { TOOL } from '../ui/ToolPanel.js';
 import { RIDE_CATALOG, RIDE_TYPE } from '../rides/RideRegistry.js';
 import { Ride } from '../rides/Ride.js';
 import { SURFACE, HUD_HEIGHT } from '../constants.js';
+import { TrackEditor } from '../track/TrackEditor.js';
 
 const TOOL_TO_RIDE = {
   [TOOL.RIDE_FERRIS]:    RIDE_TYPE.FERRIS_WHEEL,
@@ -19,9 +20,10 @@ const TOOL_TO_RIDE = {
 };
 
 export class Game {
-  #bus      = new EventBus();
-  #world    = new World();
-  #renderer = new Renderer();
+  #bus          = new EventBus();
+  #world        = new World();
+  #renderer     = new Renderer();
+  #trackEditor;
   #cam;
   #ui;
   #worldCanvas;
@@ -37,21 +39,35 @@ export class Game {
     this.#uiCtx       = uiCanvas.getContext('2d');
 
     this.#resize();
-    this.#cam = new Camera(window.innerWidth, window.innerHeight, HUD_HEIGHT);
-    this.#ui  = new UIManager(this.#bus, this.#world);
+    this.#cam         = new Camera(window.innerWidth, window.innerHeight, HUD_HEIGHT);
+    this.#trackEditor = new TrackEditor(this.#world, this.#bus);
+    this.#ui          = new UIManager(this.#bus, this.#world, this.#trackEditor);
 
     new InputManager(worldCanvas, this.#bus);
 
     this.#bus.on('pan', ({ dx, dy }) => {
-      if (this.#ui.currentTool !== TOOL.PATH) this.#cam.pan(dx, dy);
+      const t = this.#ui.currentTool;
+      if (t !== TOOL.PATH) this.#cam.pan(dx, dy);
     });
     this.#bus.on('zoom', ({ screenX, screenY, factor }) => {
       this.#cam.zoomAt(screenX, screenY, factor);
     });
     this.#bus.on('pointerMove', ({ x, y, dragging }) => {
       if (dragging && this.#ui.currentTool === TOOL.PATH) this.#applyTool(x, y);
+      // Track hover tile for track editor ghost
+      if (this.#ui.currentTool === TOOL.COASTER) {
+        const { tx, ty } = this.#cam.screenToWorld(x, y);
+        this.#trackEditor.setHover(tx, ty);
+      }
     });
     this.#bus.on('tap', ({ x, y }) => this.#applyTool(x, y));
+    this.#bus.on('toolChange', ({ tool }) => {
+      if (tool === TOOL.COASTER) {
+        this.#trackEditor.activate();
+      } else {
+        this.#trackEditor.deactivate();
+      }
+    });
 
     window.addEventListener('resize', () => this.#resize());
   }
@@ -71,6 +87,12 @@ export class Game {
 
   #applyTool(x, y) {
     const { tx, ty } = this.#cam.screenToWorld(x, y);
+
+    // Coaster tool: TrackEditor handles its own bounds checking
+    if (this.#ui.currentTool === TOOL.COASTER) {
+      this.#trackEditor.handleTap(tx, ty);
+      return;
+    }
 
     // Ride placement tools
     const rideType = TOOL_TO_RIDE[this.#ui.currentTool];
@@ -165,7 +187,7 @@ export class Game {
       this.#update(dt);
       const w = window.innerWidth;
       const h = window.innerHeight;
-      this.#renderer.render(this.#worldCtx, this.#uiCtx, this.#world, this.#cam, w, h);
+      this.#renderer.render(this.#worldCtx, this.#uiCtx, this.#world, this.#trackEditor, this.#cam, w, h);
       this.#rafId = requestAnimationFrame(tick);
     };
     this.#rafId = requestAnimationFrame(tick);

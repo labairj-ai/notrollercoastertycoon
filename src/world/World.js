@@ -2,7 +2,8 @@ import { TileGrid } from './TileGrid.js';
 
 export class World {
   grid  = new TileGrid();
-  rides = new Map();  // rideId → Ride
+  rides    = new Map();  // rideId → Ride
+  coasters = new Map();  // layoutId → TrackLayout
   peeps = [];
   staff = [];
 

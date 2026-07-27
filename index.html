@@ -137,6 +137,101 @@
     .tool-icon  { font-size: 22px; line-height: 1.2; }
     .tool-label { font-size: 10px; margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
 
+    /* ── Track Editor Panel ── */
+    .track-panel {
+      position: absolute;
+      bottom: calc(80px + 12px);
+      right: 12px;
+      z-index: 25;
+      background: rgba(8, 8, 18, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #d8cfa0;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 280px;
+      max-width: calc(100vw - 24px);
+    }
+    .track-panel-title {
+      font-size: 12px;
+      text-align: center;
+      color: #90a8d8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .track-pieces {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .piece-btn {
+      min-width: 50px;
+      min-height: 44px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.07);
+      color: #a09880;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+    .piece-btn.active {
+      background: rgba(90, 200, 80, 0.18);
+      color: #7ee860;
+      border-color: rgba(90, 200, 80, 0.45);
+    }
+    .piece-btn:disabled { opacity: 0.35; }
+    .track-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+    .track-btn {
+      flex: 1;
+      min-height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.07);
+      color: #d8cfa0;
+      font-size: 12px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+    .track-btn.primary {
+      background: rgba(90, 200, 80, 0.18);
+      color: #7ee860;
+      border-color: rgba(90, 200, 80, 0.45);
+    }
+    .track-btn.danger {
+      background: rgba(200, 60, 60, 0.15);
+      color: #e87070;
+      border-color: rgba(200, 60, 60, 0.35);
+    }
+    .track-btn:disabled { opacity: 0.35; }
+    .track-errors {
+      font-size: 11px;
+      color: #e08060;
+      text-align: center;
+    }
+
     /* ── Ride Panel ── */
     .ride-panel {
       position: absolute;

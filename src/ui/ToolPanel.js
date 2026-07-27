@@ -3,6 +3,7 @@ export const TOOL = {
   PATH:           'PATH',
   RAISE:          'RAISE',
   LOWER:          'LOWER',
+  COASTER:        'COASTER',
   RIDE_FERRIS:    'RIDE_FERRIS',
   RIDE_CAROUSEL:  'RIDE_CAROUSEL',
   RIDE_BUMPERS:   'RIDE_BUMPERS',
@@ -16,7 +17,8 @@ const TOOL_DEFS = [
   { id: TOOL.PATH,           icon: '🛤',  label: 'Path'     },
   { id: TOOL.RAISE,          icon: '▲',   label: 'Raise'    },
   { id: TOOL.LOWER,          icon: '▼',   label: 'Lower'    },
-  null, // separator
+  null,
+  { id: TOOL.COASTER,        icon: '🎢',  label: 'Coaster'  },
   { id: TOOL.RIDE_FERRIS,    icon: '🎡',  label: 'Ferris'   },
   { id: TOOL.RIDE_CAROUSEL,  icon: '🎠',  label: 'Carousel' },
   { id: TOOL.RIDE_BUMPERS,   icon: '🚗',  label: 'Bumpers'  },
