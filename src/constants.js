@@ -24,3 +24,4 @@ export const SURFACE = { NONE: 'NONE', PATH: 'PATH', QUEUE: 'QUEUE', RIDE_BASE: 
 // Mobile UI — Apple HIG minimum tap target
 export const MIN_TOUCH_TARGET  = 44;
 export const TOOL_PANEL_HEIGHT = 80; // bottom toolbar height
+export const HUD_HEIGHT        = 48; // top info bar height

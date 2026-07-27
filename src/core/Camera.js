@@ -8,10 +8,10 @@ export class Camera {
   y = 0;
   zoom = 1;
 
-  constructor(cssW, cssH) {
-    // Place the apex tile (0,0) near the top-center of the screen
+  constructor(cssW, cssH, topOffset = 48) {
+    // Place apex tile (0,0) just below the HUD
     this.x = cssW / 2;
-    this.y = TILE_H + 20;
+    this.y = topOffset + TILE_H + 10;
   }
 
   pan(dx, dy) {

@@ -1,6 +1,7 @@
 // Unified Pointer Events handler — covers mouse, touch, and stylus with no branching.
 // Pinch-to-zoom: two simultaneous pointers → measures distance delta.
 // Single pointer: drag threshold of 6px before emitting pan (prevents tap mis-fires).
+// pointerMove is emitted during single-pointer moves so tools can paint on drag.
 export class InputManager {
   #bus;
   #canvas;
@@ -61,6 +62,8 @@ export class InputManager {
       if (this.#isDragging) {
         this.#bus.emit('pan', { dx, dy });
       }
+      // Always emit current pointer position so active tools can paint on drag
+      this.#bus.emit('pointerMove', { x: curr.x, y: curr.y, dragging: this.#isDragging });
     }
   }
 
