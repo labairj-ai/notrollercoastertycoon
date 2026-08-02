@@ -4,6 +4,7 @@ export class World {
   grid  = new TileGrid();
   rides    = new Map();  // rideId → Ride
   coasters = new Map();  // layoutId → TrackLayout
+  trains   = new Map();  // trainId → Train
   peeps = [];
   staff = [];
 

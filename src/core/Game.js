@@ -177,6 +177,9 @@ export class Game {
         ride.animAngle = (ride.animAngle + dt * ride.animSpeed) % (Math.PI * 2);
       }
     }
+    for (const train of this.#world.trains.values()) {
+      train.update(dt);
+    }
   }
 
   start() {

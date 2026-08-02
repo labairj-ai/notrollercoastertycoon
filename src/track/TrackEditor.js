@@ -1,6 +1,7 @@
 import { TrackLayout } from './TrackLayout.js';
 import { makePiece, PIECE_TYPE, getPieceDef } from './PieceCatalog.js';
 import { validateTrack } from './TrackValidator.js';
+import { Train } from './Train.js';
 import { SURFACE, GRID_SIZE } from '../constants.js';
 
 export const EDITOR_STATE = {
@@ -116,10 +117,13 @@ export class TrackEditor {
 
   openRide() {
     if (this.state !== EDITOR_STATE.CLOSED) return;
-    this.layout.status = 'OPEN';
-    this.state         = EDITOR_STATE.IDLE;
-    this.layout        = null;
-    this.ghost         = null;
+    const layout = this.layout;
+    layout.status = 'OPEN';
+    const train = new Train(layout);
+    this.#world.trains.set(train.id, train);
+    this.state  = EDITOR_STATE.IDLE;
+    this.layout = null;
+    this.ghost  = null;
     this.#emit();
   }
 
