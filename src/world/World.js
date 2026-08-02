@@ -16,4 +16,7 @@ export class World {
     parkRating: 500,
     parkName:   'My Park',
   };
+
+  gameSpeed = 1;   // 0 = paused, 1 = normal, 3 = fast-forward
+  timeOfDay = 0;   // 0–1 fraction through the current day (updated by PeepManager)
 }

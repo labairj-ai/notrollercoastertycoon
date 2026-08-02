@@ -63,6 +63,7 @@ export class Game {
       }
     });
     this.#bus.on('tap', ({ x, y }) => this.#applyTool(x, y));
+    this.#bus.on('speedChange', ({ speed }) => { this.#world.gameSpeed = speed; });
     this.#bus.on('toolChange', ({ tool }) => {
       if (tool === TOOL.COASTER) {
         this.#trackEditor.activate();
@@ -177,15 +178,16 @@ export class Game {
   }
 
   #update(dt) {
+    const sdt = dt * this.#world.gameSpeed;
     for (const ride of this.#world.rides.values()) {
       if (ride.animated && ride.status === 'OPEN') {
-        ride.animAngle = (ride.animAngle + dt * ride.animSpeed) % (Math.PI * 2);
+        ride.animAngle = (ride.animAngle + sdt * ride.animSpeed) % (Math.PI * 2);
       }
     }
     for (const train of this.#world.trains.values()) {
-      train.update(dt);
+      train.update(sdt);
     }
-    this.#peepManager.update(dt, this.#world, this.#bus);
+    this.#peepManager.update(sdt, this.#world, this.#bus);
   }
 
   start() {

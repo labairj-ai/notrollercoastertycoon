@@ -23,8 +23,10 @@ export class PeepManager {
 
   #tickDay(dt, world, bus) {
     this.#dayTimer += dt * 1000;
+    world.timeOfDay = Math.min(this.#dayTimer / DAY_LENGTH_MS, 1);
     if (this.#dayTimer >= DAY_LENGTH_MS) {
       this.#dayTimer -= DAY_LENGTH_MS;
+      world.timeOfDay = 0;
       world.economy.day++;
       bus.emit('economyUpdate', world.economy);
     }

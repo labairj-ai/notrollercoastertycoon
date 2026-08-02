@@ -11,7 +11,7 @@ export class UIManager {
 
   constructor(bus, world, trackEditor) {
     this.#toolPanel  = new ToolPanel(bus);
-    this.#hud        = new HUD(world.economy);
+    this.#hud        = new HUD(world.economy, bus);
     this.#ridePanel  = new RidePanel();
     this.#trackPanel = new TrackEditorPanel(trackEditor, bus);
     bus.on('economyUpdate', data => this.#hud.update(data));

@@ -3,8 +3,9 @@ export class HUD {
   #dayEl;
   #guestsEl;
   #ratingEl;
+  #speedBtns;
 
-  constructor(economy) {
+  constructor(economy, bus) {
     const hud = document.createElement('div');
     hud.className = 'hud';
     hud.innerHTML = `
@@ -15,6 +16,12 @@ export class HUD {
       <span class="hud-item" id="hud-guests"></span>
       <span class="hud-sep">|</span>
       <span class="hud-item" id="hud-rating"></span>
+      <span class="hud-sep">|</span>
+      <span class="hud-speeds">
+        <button class="speed-btn" data-speed="0" title="Pause">⏸</button>
+        <button class="speed-btn active" data-speed="1" title="Normal">▶</button>
+        <button class="speed-btn" data-speed="3" title="Fast">⏩</button>
+      </span>
     `;
     document.getElementById('app').appendChild(hud);
 
@@ -22,6 +29,15 @@ export class HUD {
     this.#dayEl    = document.getElementById('hud-day');
     this.#guestsEl = document.getElementById('hud-guests');
     this.#ratingEl = document.getElementById('hud-rating');
+    this.#speedBtns = hud.querySelectorAll('.speed-btn');
+
+    hud.querySelector('.hud-speeds').addEventListener('click', e => {
+      const btn = e.target.closest('.speed-btn');
+      if (!btn) return;
+      const speed = +btn.dataset.speed;
+      bus.emit('speedChange', { speed });
+      for (const b of this.#speedBtns) b.classList.toggle('active', +b.dataset.speed === speed);
+    });
 
     this.update(economy);
   }

@@ -77,6 +77,34 @@
     .hud-sep { opacity: 0.35; }
     .hud-item { white-space: nowrap; }
 
+    .hud-speeds {
+      display: inline-flex;
+      gap: 3px;
+      pointer-events: auto;
+    }
+    .speed-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: #a09880;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      min-width: 28px;
+      min-height: 26px;
+      padding: 3px 6px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s, color 0.1s;
+      font-family: inherit;
+    }
+    .speed-btn:active { background: rgba(255,255,255,0.15); }
+    .speed-btn.active {
+      background: rgba(90,200,80,0.2);
+      border-color: rgba(90,200,80,0.5);
+      color: #7ee860;
+    }
+
     /* ── Tool Panel ── */
     .tool-panel {
       position: absolute;
