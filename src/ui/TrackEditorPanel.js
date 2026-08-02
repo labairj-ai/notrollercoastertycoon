@@ -49,12 +49,22 @@ export class TrackEditorPanel {
     this.#el.style.display = 'flex';
 
     // ── title ─────────────────────────────────────────────────────────────
-    const titles = {
-      [EDITOR_STATE.AWAITING_STATION]: '🎢  Tap to place station',
-      [EDITOR_STATE.PLACING]:          '🎢  Build Track',
-      [EDITOR_STATE.CLOSED]:           '🎢  Track Complete',
-    };
-    this.#titleEl.textContent = titles[state] ?? '';
+    // Show current track-end elevation while building so player can balance slopes
+    let titleText = '';
+    if (state === EDITOR_STATE.AWAITING_STATION) {
+      titleText = '🎢  Tap to place station';
+    } else if (state === EDITOR_STATE.PLACING) {
+      const last = layout?.pieces[layout.pieces.length - 1];
+      const elev = last ? last.elev + last.dz : 0;
+      const elevStr = elev === 0 ? '' : elev > 0 ? ` ↑${elev}` : ` ↓${Math.abs(elev)}`;
+      titleText = `🎢  Build Track${elevStr}`;
+      if (!canClose && layout?.pieces.length >= 4 && elev !== 0) {
+        titleText += '  — balance slopes to close';
+      }
+    } else if (state === EDITOR_STATE.CLOSED) {
+      titleText = '🎢  Track Complete';
+    }
+    this.#titleEl.textContent = titleText;
 
     // ── piece picker (PLACING only) ────────────────────────────────────────
     this.#piecesEl.innerHTML = '';

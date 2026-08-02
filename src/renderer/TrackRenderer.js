@@ -90,6 +90,8 @@ export class TrackRenderer {
     } else if (isCurve) {
       this.#drawCurve(ctx, ex, ey, sx, sy, xx, xy, cam.zoom, piece.isBrake);
     } else {
+      // Draw slope ramp face BEFORE the track bed so rails render on top
+      if (piece.dz !== 0) this.#drawSlopeRamp(ctx, piece, conn, hh, cam.zoom);
       this.#drawStraight(ctx, ex, ey, xx, xy, cam.zoom, piece.dz !== 0, piece.isBrake);
     }
 
@@ -103,6 +105,42 @@ export class TrackRenderer {
     const dy  = xy - ey;
     const len = Math.hypot(dx, dy) || 1;
     return { nx: -dy / len, ny: dx / len }; // unit perpendicular (CCW)
+  }
+
+  // Draws the visible vertical ramp face on the higher-elevation side of a slope piece,
+  // making slope direction legible in iso view (where horizontal slopes look flat).
+  #drawSlopeRamp(ctx, piece, conn, hh, zoom) {
+    const g = RAIL_HALF * zoom;
+    const isUp = piece.dz > 0;
+
+    // The step face appears on the EXIT side for Up, ENTRY side for Down
+    const faceDir = isUp ? piece.exitDir : piece.entryDir;
+    const [cx, cy] = conn[faceDir];
+
+    const [ex, ey] = conn[piece.entryDir];
+    const [xx, xy] = conn[piece.exitDir];
+    const { nx, ny } = this.#railOffset(ex, ey, xx, xy);
+
+    // faceH is negative (upward on screen) for Up, positive (downward) for Down
+    const faceH = -piece.dz * hh;
+
+    // Ramp face body
+    ctx.fillStyle = isUp ? '#2a5a8a' : '#8a4a1a';
+    ctx.beginPath();
+    ctx.moveTo(cx + nx * g * 2, cy);
+    ctx.lineTo(cx - nx * g * 2, cy);
+    ctx.lineTo(cx - nx * g * 2, cy + faceH);
+    ctx.lineTo(cx + nx * g * 2, cy + faceH);
+    ctx.closePath();
+    ctx.fill();
+
+    // Highlight edge at the top of the ramp
+    ctx.strokeStyle = isUp ? '#6ab0e0' : '#e0904a';
+    ctx.lineWidth   = Math.max(1.5, zoom * 2);
+    ctx.beginPath();
+    ctx.moveTo(cx + nx * g * 2, cy + faceH);
+    ctx.lineTo(cx - nx * g * 2, cy + faceH);
+    ctx.stroke();
   }
 
   #drawStraight(ctx, ex, ey, xx, xy, zoom, isSlope, isBrake) {
