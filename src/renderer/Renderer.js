@@ -3,6 +3,7 @@ import { PathRenderer } from './PathRenderer.js';
 import { RideRenderer } from './RideRenderer.js';
 import { TrackRenderer } from './TrackRenderer.js';
 import { TrainRenderer } from './TrainRenderer.js';
+import { PeepRenderer } from './PeepRenderer.js';
 
 export class Renderer {
   #terrain = new TerrainRenderer();
@@ -10,6 +11,7 @@ export class Renderer {
   #ride    = new RideRenderer();
   #track   = new TrackRenderer();
   #train   = new TrainRenderer();
+  #peep    = new PeepRenderer();
 
   render(worldCtx, uiCtx, world, trackEditor, cam, cssW, cssH) {
     worldCtx.clearRect(0, 0, cssW, cssH);
@@ -20,5 +22,6 @@ export class Renderer {
     this.#ride.render(worldCtx, world, cam);
     this.#track.render(worldCtx, world, trackEditor, cam, cssW, cssH);
     this.#train.render(worldCtx, world, cam, cssW, cssH);
+    this.#peep.render(worldCtx, world, cam, cssW, cssH);
   }
 }

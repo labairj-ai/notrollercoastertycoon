@@ -4,5 +4,4 @@ const game = new Game(
   document.getElementById('world'),
   document.getElementById('ui'),
 );
-
 game.start();

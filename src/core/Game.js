@@ -9,6 +9,7 @@ import { RIDE_CATALOG, RIDE_TYPE } from '../rides/RideRegistry.js';
 import { Ride } from '../rides/Ride.js';
 import { SURFACE, HUD_HEIGHT } from '../constants.js';
 import { TrackEditor } from '../track/TrackEditor.js';
+import { PeepManager } from '../peeps/PeepManager.js';
 
 const TOOL_TO_RIDE = {
   [TOOL.RIDE_FERRIS]:    RIDE_TYPE.FERRIS_WHEEL,
@@ -23,6 +24,7 @@ export class Game {
   #bus          = new EventBus();
   #world        = new World();
   #renderer     = new Renderer();
+  #peepManager  = new PeepManager();
   #trackEditor;
   #cam;
   #ui;
@@ -125,8 +127,11 @@ export class Game {
   #placePath(tx, ty, tile) {
     if (tile.surface !== SURFACE.NONE) return;
     tile.surface = SURFACE.PATH;
+    this.#world.grid.version++;
     this.#world.economy.money -= 10;
     this.#updatePathMask(tx, ty);
+    // First path tile placed becomes the park entrance (guest spawn point)
+    if (!this.#world.entrance) this.#world.entrance = { tx, ty };
     this.#bus.emit('economyUpdate', this.#world.economy);
   }
 
@@ -180,6 +185,7 @@ export class Game {
     for (const train of this.#world.trains.values()) {
       train.update(dt);
     }
+    this.#peepManager.update(dt, this.#world, this.#bus);
   }
 
   start() {
