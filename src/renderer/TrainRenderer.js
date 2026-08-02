@@ -20,7 +20,6 @@ export class TrainRenderer {
     const hw = (TILE_W / 2) * cam.zoom;
     const hh = (TILE_H / 2) * cam.zoom;
 
-    // Connection midpoints matching TrackRenderer
     const conn = [
       [sx + hw * 0.5, sy - hh * 0.5],  // N
       [sx + hw * 0.5, sy + hh * 0.5],  // E
@@ -28,13 +27,21 @@ export class TrainRenderer {
       [sx - hw * 0.5, sy - hh * 0.5],  // W
     ];
 
+    // Match TrackRenderer: slope exit is at piece.elev + piece.dz
+    const exitSy = sy - piece.dz * hh;
+    const connExit = piece.dz !== 0 ? [
+      [sx + hw * 0.5, exitSy - hh * 0.5],
+      [sx + hw * 0.5, exitSy + hh * 0.5],
+      [sx - hw * 0.5, exitSy + hh * 0.5],
+      [sx - hw * 0.5, exitSy - hh * 0.5],
+    ] : conn;
+
     const [ex, ey] = conn[piece.entryDir];
-    const [xx, xy] = conn[piece.exitDir];
+    const [xx, xy] = connExit[piece.exitDir];
 
     const isCurve = piece.type === PIECE_TYPE.CURVE_L || piece.type === PIECE_TYPE.CURVE_R;
 
     if (isCurve) {
-      // Piecewise through tile center
       if (t < 0.5) {
         const u = t * 2;
         return { px: ex + (sx - ex) * u, py: ey + (sy - ey) * u, ex, ey, xx: sx, xy: sy };

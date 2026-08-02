@@ -55,8 +55,7 @@ export class TrackRenderer {
     const hw = (TILE_W / 2) * cam.zoom;
     const hh = (TILE_H / 2) * cam.zoom;
 
-    // Edge midpoints of the iso diamond — one per cardinal direction
-    // N = top-right edge midpoint, E = bottom-right, S = bottom-left, W = top-left
+    // Edge midpoints at piece.elev (entry side)
     const conn = [
       [sx + hw * 0.5, sy - hh * 0.5],  // 0 N
       [sx + hw * 0.5, sy + hh * 0.5],  // 1 E
@@ -64,8 +63,17 @@ export class TrackRenderer {
       [sx - hw * 0.5, sy - hh * 0.5],  // 3 W
     ];
 
+    // Slope pieces exit at a different elevation — only sy changes with elev
+    const exitSy = sy - piece.dz * hh;
+    const connExit = piece.dz !== 0 ? [
+      [sx + hw * 0.5, exitSy - hh * 0.5],  // 0 N at exit elev
+      [sx + hw * 0.5, exitSy + hh * 0.5],  // 1 E at exit elev
+      [sx - hw * 0.5, exitSy + hh * 0.5],  // 2 S at exit elev
+      [sx - hw * 0.5, exitSy - hh * 0.5],  // 3 W at exit elev
+    ] : conn;
+
     const [ex, ey] = conn[piece.entryDir];
-    const [xx, xy] = conn[piece.exitDir];
+    const [xx, xy] = connExit[piece.exitDir];
 
     ctx.globalAlpha = alpha;
 
@@ -90,7 +98,7 @@ export class TrackRenderer {
     } else if (isCurve) {
       this.#drawCurve(ctx, ex, ey, sx, sy, xx, xy, cam.zoom, piece.isBrake);
     } else {
-      // Draw slope ramp face BEFORE the track bed so rails render on top
+      // Ramp face drawn first so rails render on top of it
       if (piece.dz !== 0) this.#drawSlopeRamp(ctx, piece, conn, hh, cam.zoom);
       this.#drawStraight(ctx, ex, ey, xx, xy, cam.zoom, piece.dz !== 0, piece.isBrake);
     }
@@ -107,25 +115,23 @@ export class TrackRenderer {
     return { nx: -dy / len, ny: dx / len }; // unit perpendicular (CCW)
   }
 
-  // Draws the visible vertical ramp face on the higher-elevation side of a slope piece,
-  // making slope direction legible in iso view (where horizontal slopes look flat).
+  // Draws the vertical ramp face at the exit side of a slope piece.
+  // conn is at piece.elev; the face spans from conn[exitDir] (base level)
+  // to connExit[exitDir] (elevated level), bridging the step visually.
   #drawSlopeRamp(ctx, piece, conn, hh, zoom) {
     const g = RAIL_HALF * zoom;
-    const isUp = piece.dz > 0;
-
-    // The step face appears on the EXIT side for Up, ENTRY side for Down
-    const faceDir = isUp ? piece.exitDir : piece.entryDir;
-    const [cx, cy] = conn[faceDir];
+    // cx,cy is the exit edge midpoint at piece.elev (the BASE of the step for Up,
+    // the TOP of the step for Down)
+    const [cx, cy] = conn[piece.exitDir];
 
     const [ex, ey] = conn[piece.entryDir];
     const [xx, xy] = conn[piece.exitDir];
     const { nx, ny } = this.#railOffset(ex, ey, xx, xy);
 
-    // faceH is negative (upward on screen) for Up, positive (downward) for Down
+    // faceH: negative = upward on screen (Up slope), positive = downward (Down slope)
     const faceH = -piece.dz * hh;
 
-    // Ramp face body
-    ctx.fillStyle = isUp ? '#2a5a8a' : '#8a4a1a';
+    ctx.fillStyle = piece.dz > 0 ? '#2a5a8a' : '#8a4a1a';
     ctx.beginPath();
     ctx.moveTo(cx + nx * g * 2, cy);
     ctx.lineTo(cx - nx * g * 2, cy);
@@ -134,8 +140,8 @@ export class TrackRenderer {
     ctx.closePath();
     ctx.fill();
 
-    // Highlight edge at the top of the ramp
-    ctx.strokeStyle = isUp ? '#6ab0e0' : '#e0904a';
+    // Highlight at the elevated edge (where rails connect to next piece)
+    ctx.strokeStyle = piece.dz > 0 ? '#6ab0e0' : '#e0904a';
     ctx.lineWidth   = Math.max(1.5, zoom * 2);
     ctx.beginPath();
     ctx.moveTo(cx + nx * g * 2, cy + faceH);
