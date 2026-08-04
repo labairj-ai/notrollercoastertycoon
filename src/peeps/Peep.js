@@ -7,7 +7,8 @@ export const PEEP_STATE = {
 
 const WALK_SPEED = 2.0; // tiles/second
 
-const COLORS = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#f06595','#74c0fc'];
+const COLORS     = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#f06595','#74c0fc'];
+const HAT_COLORS = ['#5a3010','#1a2a3a','#4a1818','#1a3a1a','#3a1a4a'];
 
 export class Peep {
   constructor(tx, ty) {
@@ -26,6 +27,9 @@ export class Peep {
     this.targetId     = null;      // ride.id or layout.id
     this.isCoaster    = false;
     this.color        = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.hatColor     = HAT_COLORS[Math.floor(Math.random() * HAT_COLORS.length)];
+    this.facingDx     = 0;
+    this.facingDy     = 1;
     this.stuckTimer   = 0;
     this.ridesVisited = 0;
   }
@@ -63,9 +67,13 @@ export class Peep {
 
     while (this.stepT >= 1 && this.pathIdx < this.pathSteps.length - 1) {
       this.stepT -= 1;
+      const prevTx = this.tx;
+      const prevTy = this.ty;
       this.pathIdx++;
       this.tx = this.pathSteps[this.pathIdx][0];
       this.ty = this.pathSteps[this.pathIdx][1];
+      this.facingDx = this.tx - prevTx;
+      this.facingDy = this.ty - prevTy;
     }
 
     // Clamp at last step
